@@ -1,5 +1,6 @@
 @import url("https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,600,600italic,700");
 @import url("fontawesome-all.min.css");
+@import url("extended.css");
 
 /*
 	Miniport by HTML5 UP
@@ -98,7 +99,7 @@ input, select, textarea {
 		}
 
 	body, input, textarea, select {
-		font-family: 'Open Sans', sans-serif;
+		font-family: 'Futura', sans-serif;
 		line-height: 1.85em;
 		color: #888;
 		font-weight: 300;
