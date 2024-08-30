@@ -80,7 +80,7 @@
 				var id = "box-" + index;
 				$(this).attr("id", id);
 
-				$(this).click(function(){
+				$(this).on("click",function(){
 					console.log("open me");
 					$("#modal-"+index).addClass("in");
 				});
