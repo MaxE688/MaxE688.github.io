@@ -30,7 +30,7 @@
 			$cardArticle.append($("<p>" + proj.shortDesc + "</p>"));
 			$("#card-container").append($card);
 	
-			// Create modal, append to DOM
+			// Create modal elements
 			let $modal = $("<div class='modal'></div>");
 			let $modalContent = $("<div class='modal-conent'></div>");
 			let $closeModal = $("<div class='close-modal'></div>");
@@ -59,9 +59,6 @@
 			window.setTimeout(function() {
 				$body.removeClass('is-preload');
 			}, 100);
-
-
-			
 		});
 		
 		$document.ready(function(){
