@@ -51,8 +51,8 @@
 			$modalContent.append($content);
 			$modal.append($modalContent);
 			
-			$card.append($modal);
-			// $("#modal-container").append($modal);
+			// $card.append($modal);
+			$("#modal-container").append($modal);
 		});
 
 		// Play initial animations on page load.
