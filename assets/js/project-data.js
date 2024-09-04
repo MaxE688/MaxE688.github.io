@@ -1,7 +1,7 @@
 const projects = [
   {
     title: "Project 1",
-    img: "images/pic01.jpg",
+    img: "images/proj1-1.jpg",
     alt: "Project 1 img",
     shortDesc: "Ornare nulla proin odio consequat.",
     longDesc: "Ornare nulla proin odio consequat. Ornare nulla proin odio consequat.",
