@@ -35,12 +35,19 @@
 			let $modalContent = $("<div class='modal-conent'></div>");
 			let $closeModal = $("<div class='close-modal'></div>");
 			let $content = $("<div class='container flex' ></div>");
+			let $desc = $("<div class='modal-desc'></div>"); 
+			let $btnContainer = $("<div class='button-container'></div>");
 	
 			// create main content element for modal
 			$content.append($("<h1 class='modal-title'> "+ proj.title +"</>"));
 			$content.append($("<hr class='modal-title-rule'/>"))
-			$content.append($("<img src='"+ proj.img +"'/>"));
-			$content.append($("<p>"+ proj.longDesc +"</p>"));
+			$content.append($("<div class='image modal-image' ><img src='"+ proj.img +"'/></div>"));
+			$content.append($($desc));
+			$desc.append($("<p  >"+ proj.longDesc +"</p>"));
+			$desc.append($btnContainer);
+
+			$btnContainer.append($("<a href='" + proj.demo + "' class='button'>Live Demo</a>"));
+			$btnContainer.append($("<a href='" + proj.source + "' class='button'>View Source</a>"));
 	
 			// create close button for modal
 			$closeModal.append($("<img class='close-modal-img' id='close-modal-1' src='./images/SVG/close-circle-dark.svg' />"));

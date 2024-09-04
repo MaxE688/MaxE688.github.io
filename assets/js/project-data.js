@@ -1,12 +1,12 @@
 const projects = [
   {
-    title: "Project 1",
+    title: "Diversity Calculator",
     img: "images/proj1-1.jpg",
     alt: "Project 1 img",
-    shortDesc: "Ornare nulla proin odio consequat.",
-    longDesc: "Ornare nulla proin odio consequat. Ornare nulla proin odio consequat.",
-    demo: "",
-    source: ""
+    shortDesc: "Calculate the diversity score of selected stocks.",
+    longDesc: "A WebApp to calculate the diversity score of the stocks selected by users",
+    demo: "https://maxe688.github.io/stock-portfolio-diversity-calculator/",
+    source: "https://github.com/MaxE688/stock-portfolio-diversity-calculator"
   },
   {
     title: "Project 2",

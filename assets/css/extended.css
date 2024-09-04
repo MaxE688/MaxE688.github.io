@@ -129,3 +129,20 @@ main {
   opacity: 1;
   scale: 1;
 }
+
+.modal-image {
+  width: 25rem;
+}
+
+.modal-desc {
+  margin-bottom: 2em;
+}
+.modal-desc > p {
+  margin-bottom: 1em;
+}
+
+.button-container{
+  display:flex;
+  gap: 1rem;
+  justify-content: center;
+}
