@@ -141,7 +141,7 @@
 			
 				$.ajax({
 					type: 'POST',
-					url: 'http://localhost:3000/portfolio-email',
+					url: 'https://one-off-backends.onrender.com/portfolio-email',
 					data: data,
 					success: (res) => alert("Your message has been sent"),
 					error: (xhr, status, error) => alert("Error please reach out to me directly: max.evers8@gmail.com")
