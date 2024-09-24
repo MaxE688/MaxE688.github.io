@@ -19,6 +19,7 @@
 			small:   [ null,      '736px'  ]
 		});
 
+		// Create project elements and add to DOM
 		projects.forEach(function(proj, index) {
 	
 			// Create card, append to DOM
@@ -62,6 +63,40 @@
 			$("#modal-container").append($modal);
 		});
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		// Play initial animations on page load.
 		$window.on('load', function() {
 			window.setTimeout(function() {
@@ -94,18 +129,25 @@
 			});
 
 
-
-			// Closes the project preview
-			// $(".close-modal").click(function(){
-			// 	console.log("Closed");
-			// 	$(".modal").toggleClass("in");
-			// });
+			$('form').submit((event) => {
 			
-			// Opens the project preview
-			// $(".box").click(function(){
-			// 	console.log("Opened");
-			// 	$(".modal").toggleClass("in");
-			// });
+				event.preventDefault();
+				const data = {
+					name: $('form').find('input[name="name"]').val(),
+					email: $('form').find('input[name="email"]').val(),
+					subject: $('form').find('input[name="subject"]').val(),
+					message: $('form').find('textarea[name="message"]').val()
+				}
+			
+				$.ajax({
+					type: 'POST',
+					url: 'http://localhost:3000/portfolio-email',
+					data: data,
+					success: (res) => alert("Your message has been sent"),
+					error: (xhr, status, error) => alert("Error please reach out to me directly: max.evers8@gmail.com")
+				});
+				return false;
+			});
 
 
 		});
@@ -117,3 +159,5 @@
 		});
 
 })(jQuery);
+
+
