@@ -2106,7 +2106,8 @@ input, select, textarea {
 	}
 
 	#top {
-		padding: 10em 0 10em 0;
+		/* padding: 10em 0 0em 0; */
+		padding-bottom: 10em;
 		text-align: left;
 	}
 
@@ -2213,7 +2214,8 @@ input, select, textarea {
 		/* Articles */
 
 			#top {
-				padding: 8em 0;
+				/* padding: 8em 0; */
+				padding-bottom: 8em;
 			}
 
 				#top .image {
@@ -2232,7 +2234,8 @@ input, select, textarea {
 
 			#top {
 				text-align: center;
-				padding: 5em 0;
+				/* padding: 5em 0; */
+				padding-bottom: 5em;
 			}
 
 				#top .image {
@@ -2412,6 +2415,7 @@ input, select, textarea {
 
 			#top {
 				padding: 3em 0;
+				/* padding-bottom:3em; */
 			}
 
 				#top .image {
