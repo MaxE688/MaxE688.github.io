@@ -1,4 +1,4 @@
-import * as three from '../../node_modules/three';
+import * as three from '../../node_modules/three/src/Three';
 
 (($) => {
   
