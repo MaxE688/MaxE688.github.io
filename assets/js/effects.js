@@ -1,4 +1,4 @@
-import * as three from 'three';
+import * as three from '../../node_modules/three';
 
 (($) => {
   
