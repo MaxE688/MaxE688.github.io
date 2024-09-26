@@ -1,5 +1,4 @@
 import * as three from 'three';
-import { initSplineTexture } from 'three/examples/jsm/Addons.js';
 
 (($) => {
   
