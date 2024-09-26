@@ -30,19 +30,23 @@
 	<main>
 
 		<!-- Home -->
-		<article id="top" class="wrapper style1">
-			<div class="container">
+		<article id="top" class=" style1">
+			<div class="container" id="canvas-container">
 				<div class="row">
 					<div class="col-4 col-5-large col-12-medium">
 						<span class="image fit"><img src="images/logo1.png" alt="" /></span>
 					</div>
-					<div class="col-8 col-7-large col-12-medium">
-						<header>
-							<h1><strong>Maxwell Evers</strong></h1>
-						</header>
-						<p>Aspiring <strong>Software Developer</strong>, with expertise in creating <a>applications</a>
-							and a passion for problem-solving, <a>showcasing</a> a diverse range of projects that highlight my
-							technical skills and commitment to quality.</p>
+					<div class="mouse-listener col-8 col-7-large col-12-medium" id="home-text">
+						<div class="">
+							<header class="">
+								<h1><strong class="header">Maxwell Evers</strong></h1>
+							</header>
+							<div class="text-bg">
+								<p class="main-subtext">Aspiring <strong class="header">Software Developer</strong>, with expertise in creating <a>applications</a>
+									and a passion for problem-solving, <a>showcasing</a> a diverse range of projects that highlight my
+									technical skills and commitment to quality.</p>
+							</div>
+						</div>
 						<a href="#portfolio" class="button large scrolly">Learn about what I do</a>
 					</div>
 				</div>
@@ -137,16 +141,17 @@
 	<script src="assets/js/util.js"></script>
 	<script src="assets/js/project-data.js"></script>
 	<script src="assets/js/main.js"></script>
-	
-	<!-- import three.js -->
+	<!-- <script src="node_modules/three/src/Three.js"></script> -->
 	<script type="importmap">
 		{
 			"imports": {
-				"three": "https://cdn.jsdelivr.net/npm/three@<version>/build/three.module.js",
-				"three/addons/": "https://cdn.jsdelivr.net/npm/three@<version>/examples/jsm/"
+				"effects":"assets/js/effects.js"
 			}
 		}
 	</script>
+	<script type="module" src="assets/js/effects.js"></script>
+	
+	
 </body>
 
 </html>

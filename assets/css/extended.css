@@ -146,3 +146,31 @@ main {
   gap: 1rem;
   justify-content: center;
 }
+
+canvas{
+  width: 100%;
+  position: absolute;
+}
+
+#home-text {
+  color:aliceblue;
+  z-index: 1;
+}
+
+.header {
+  color:aliceblue;
+}
+
+
+.text-bg {
+  background-color: darkgrey;
+  border-radius: 2em;
+  opacity: 0.8;
+  padding: 1em 2em;
+  margin-bottom: 3em;
+}
+
+.main-subtext {
+  margin-bottom: 0em;
+  opacity: 1;
+}

@@ -1,0 +1,14 @@
+{
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
+  },
+  "devDependencies": {
+    "vite": "^5.4.7"
+  },
+  "dependencies": {
+    "three": "^0.169.0"
+  }
+}
