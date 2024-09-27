@@ -1,7 +1,7 @@
-import * as _ from "./main.js";
+// import * as _ from "./main.js";
 import * as three from 'three';
 import particleImage from "../../images/particle.png";
-import * as $ from "jquery";
+// import * as $ from "jquery";
 // window.jQuery = $;
 
 (($) => {

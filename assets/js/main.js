@@ -6,19 +6,15 @@
 // import { createRequire } from 'module';
 // const require = createRequire(import.meta.url);
 import projects from "./project-data.js"
-// const { JSDOM } = require( "jsdom" );
-// const { window } = new JSDOM( "" );
-// const $ = require( "jquery" );
-import * as $ from 'jquery'; 
+
+// import $ from 'jquery'; 
 // window.jQuery = $;
-// import "breakpoints"
 // import "./jquery.scrolly.min.js";
 // import "jquery.scrolly";
-// require("jquery.scrolly");
 // import "./browser.min.js";
-// require("jquery-breakpoints");
-// require("./util.js");
+// import './effects.js';
 import "jquery-breakpoints";
+import "./util.js";
 
 (($) => {
 
