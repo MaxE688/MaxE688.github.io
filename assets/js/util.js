@@ -1,5 +1,5 @@
-import $ from "jquery";
-window.jQuery = $;
+// import $ from "jquery";
+// window.jQuery = $;
 (function($) {
 
 	/**

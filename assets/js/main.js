@@ -3,18 +3,24 @@
 	html5up.net | @ajlkn
 	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 */
+// import { createRequire } from 'module';
+// const require = createRequire(import.meta.url);
 import projects from "./project-data.js"
-import $ from "jquery";
+// const { JSDOM } = require( "jsdom" );
+// const { window } = new JSDOM( "" );
+// const $ = require( "jquery" );
+import * as $ from 'jquery'; 
+// window.jQuery = $;
 // import "breakpoints"
-import "./jquery.scrolly.min.js";
+// import "./jquery.scrolly.min.js";
 // import "jquery.scrolly";
+// require("jquery.scrolly");
 // import "./browser.min.js";
+// require("jquery-breakpoints");
+// require("./util.js");
 import "jquery-breakpoints";
-import "./util.js"
 
-window.jQuery = $;
-
-export default (function($) {
+(($) => {
 
 	var	$window = $(window),
 		$document = $(document),
@@ -182,10 +188,10 @@ export default (function($) {
 		});
 
 	// Scrolly.
-		$('#nav a, .scrolly').scrolly({
-			speed: 1000,
-			offset: function() { return $nav.height(); }
-		});
+		// $('#nav a, .scrolly').scrolly({
+		// 	speed: 1000,
+		// 	offset: function() { return $nav.height(); }
+		// });
 
 })(jQuery);
 
