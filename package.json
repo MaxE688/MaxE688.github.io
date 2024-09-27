@@ -11,6 +11,10 @@
     "vite": "^5.4.7"
   },
   "dependencies": {
+    "jquery": "^3.7.1",
+    "jquery-breakpoints": "^1.8.1",
+    "jquery.browser": "^0.1.0",
+    "jquery.scrolly": "^0.0.1",
     "three": "^0.169.0"
   }
 }

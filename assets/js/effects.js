@@ -1,5 +1,8 @@
+import main from "./main.js";
 import * as three from 'three';
 import particleImage from "../../images/particle.png";
+import $ from "jquery";
+window.jQuery = $;
 
 (($) => {
   

@@ -3,22 +3,51 @@
 	html5up.net | @ajlkn
 	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 */
+import projects from "./project-data.js"
+import $ from "jquery";
+// import "breakpoints"
+import "./jquery.scrolly.min.js";
+// import "jquery.scrolly";
+// import "./browser.min.js";
+import "jquery-breakpoints";
+import "./util.js"
 
-(function($) {
+window.jQuery = $;
+
+export default (function($) {
 
 	var	$window = $(window),
 		$document = $(document),
 		$body = $('body'),
 		$nav = $('#nav');
 
-	// Breakpoints.
-		breakpoints({
-			xlarge:  [ '1281px',  '1680px' ],
-			large:   [ '981px',   '1280px' ],
-			medium:  [ '737px',   '980px'  ],
-			small:   [ null,      '736px'  ]
-		});
 
+	// Breakpoints.
+	$window.breakpoints({
+		// breakpoints({
+		// 	xlarge:  [ '1281px',  '1680px' ],
+		// 	large:   [ '981px',   '1280px' ],
+		// 	medium:  [ '737px',   '980px'  ],
+		// 	small:   [ null,      '736px'  ]
+		// });
+		breakpoints: [{
+			'name': 'xlarge',
+			'width': 1680
+		},
+		{
+			'name': 'large',
+			'width': 1280
+		},
+		{
+			'name': 'medium',
+			'width': 980
+		},
+		{
+			'name': 'small',
+			'width': 736
+		},
+	]
+})
 		// Create project elements and add to DOM
 		projects.forEach(function(proj, index) {
 	
