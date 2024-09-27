@@ -1,4 +1,5 @@
 import * as three from 'three';
+import particleImage from "../images/particle.png";
 
 (($) => {
   
