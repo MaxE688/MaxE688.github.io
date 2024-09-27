@@ -1,8 +1,8 @@
-import main from "./main.js";
+import * as _ from "./main.js";
 import * as three from 'three';
 import particleImage from "../../images/particle.png";
-import $ from "jquery";
-window.jQuery = $;
+import * as $ from "jquery";
+// window.jQuery = $;
 
 (($) => {
   
@@ -30,7 +30,8 @@ window.jQuery = $;
     const minY = -(maxY);
 
     const interactionRadius = 0.8;
-    const reflectForce = 1.3;
+    const dangerRadius = interactionRadius + 1;
+    const reflectForce = 2;
 
     const renderer = new three.WebGLRenderer();
     renderer.setSize(width, height);
@@ -43,12 +44,20 @@ window.jQuery = $;
     const cube = new three.Mesh( geometry, material );
     // scene.add( cube );
     
-    geometry = new three.CircleGeometry( 0.3, 32 ); 
+    geometry = new three.CircleGeometry( dangerRadius, 32 ); 
+    material = new three.MeshBasicMaterial( { color: 0x111111 } ); 
+    const circle1 = new three.Mesh( geometry, material ); 
+    circle1.position.x = 1000;
+    circle1.position.y = 1000;
+    scene.add( circle1 );
+    
+    geometry = new three.CircleGeometry( interactionRadius, 32 ); 
     material = new three.MeshBasicMaterial( { color: 0x0000ff } ); 
     const circle = new three.Mesh( geometry, material ); 
     circle.position.x = 1000;
     circle.position.y = 1000;
-    // scene.add( circle );
+    scene.add( circle );
+    
     
     $('canvas').addClass("mouse-listener");
     $('canvas').attr("id", "effects");
@@ -67,6 +76,8 @@ window.jQuery = $;
       // console.log('(' + mouse.x + ', ' + mouse.y + ')');
       circle.position.x = mouse.x;
       circle.position.y = mouse.y;
+      circle1.position.x = mouse.x;
+      circle1.position.y = mouse.y;
       // console.log('Mouse: (' + mouse.x + ', ' + mouse.y + ')');
     }
   
@@ -93,7 +104,7 @@ window.jQuery = $;
     
     
     
-    const particleCount = 800;
+    const particleCount = 1000000;
     const particles = new three.BufferGeometry();
     const dimensions = 3
     const positions = new Float32Array(particleCount * dimensions);
@@ -122,7 +133,7 @@ window.jQuery = $;
       
       
       speeds[x] = Math.random() * (0.01 - 0.005) + 0.005; // speed on x-axis
-      speeds[y] = Math.random() * (0.002 - -0.002) + -0.002; //speed on y-axis
+      speeds[y] = Math.random() * (0.002 - -0.002) + -0.003; //speed on y-axis
       speeds[z] = 0 // speed on z access
       
       
@@ -132,7 +143,7 @@ window.jQuery = $;
     particles.setAttribute('color', new three.BufferAttribute(colors, 3));
     const sprite = new three.TextureLoader().load(particleImage);
     const particleMaterial = new three.PointsMaterial({ 
-      size: 0.08, 
+      size: 0.0015, 
       map: sprite,
       vertexColors: true 
       
@@ -142,6 +153,7 @@ window.jQuery = $;
     
     const animate = () => {
       // requestAnimationFrame(animate);      
+      
       const positions = particleSystem.geometry.attributes.position.array;
       for( let i = 0; i < particleCount; i++){
         const x = i * 3;
@@ -151,6 +163,18 @@ window.jQuery = $;
         
         
         let distToMouse = Math.sqrt((mX - positions[x])**2 + (mY - positions[y])**2);
+
+        if(distToMouse < dangerRadius){
+          // const speed = 0.1
+          // const c = new three.Vector2(mX, mY);
+          // const particle = new three.Vector2(positions[x], positions[y]); 
+          // const direction = new three.Vector2().multiplyVectors(c, particle).normalize();
+
+          // speeds[x] += direction.x * speed;
+          // speeds[y] += direction.y * speed;
+          // speeds[x] *= speed;
+          // speeds[y] *= speed;
+        }
         
         if(distToMouse < interactionRadius){
           positions[x] -= speeds[x];
