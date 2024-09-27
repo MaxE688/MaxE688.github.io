@@ -1,5 +1,5 @@
 import * as three from 'three';
-import particleImage from "../images/particle.png";
+import particleImage from "../../images/particle.png";
 
 (($) => {
   
@@ -127,7 +127,7 @@ import particleImage from "../images/particle.png";
     
     particles.setAttribute('position', new three.BufferAttribute(positions, dimensions));
     particles.setAttribute('color', new three.BufferAttribute(colors, 3));
-    const sprite = new three.TextureLoader().load('../images/particle.png')
+    const sprite = new three.TextureLoader().load(particleImage);
     const particleMaterial = new three.PointsMaterial({ 
       size: 0.08, 
       map: sprite,
