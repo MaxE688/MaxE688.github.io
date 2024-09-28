@@ -31,7 +31,7 @@ import particleImage from "../../images/particle.png";
 
     const interactionRadius = 0.3;
     const dangerRadius = interactionRadius + 1;
-    const reflectForce = 2;
+    const reflectForce = 0.8;
 
     const renderer = new three.WebGLRenderer();
     renderer.setSize(width, height);
@@ -214,11 +214,15 @@ import particleImage from "../../images/particle.png";
 
           const dotProduct = v.dot(N);
           const R = v.sub(N.multiplyScalar(2*dotProduct));
+
+          const curveOffset = new three.Vector2(-N.y, N.x).multiplyScalar(0.8);
           
-          speeds[x] = R.x * reflectForce;
-          speeds[y] = R.y * reflectForce;
-          positions[x] = intersectPoint.x + v.x;
-          positions[y] = intersectPoint.y + v.y;
+          speeds[x] = (R.x + curveOffset.x) * reflectForce;
+          speeds[y] = (R.y + curveOffset.y) * reflectForce;
+          // speeds[x] = (R.x) * reflectForce;
+          // speeds[y] = (R.y) * reflectForce;
+          positions[x] = intersectPoint.x //+ v.x;
+          positions[y] = intersectPoint.y //+ v.y;
 
         }
 
