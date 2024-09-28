@@ -29,7 +29,7 @@ import particleImage from "../../images/particle.png";
     const maxY = sceneHeight / 2;
     const minY = -(maxY);
 
-    const interactionRadius = 0.8;
+    const interactionRadius = 0.3;
     const dangerRadius = interactionRadius + 1;
     const reflectForce = 2;
 
@@ -49,14 +49,14 @@ import particleImage from "../../images/particle.png";
     const circle1 = new three.Mesh( geometry, material ); 
     circle1.position.x = 1000;
     circle1.position.y = 1000;
-    scene.add( circle1 );
+    // scene.add( circle1 );
     
     geometry = new three.CircleGeometry( interactionRadius, 32 ); 
     material = new three.MeshBasicMaterial( { color: 0x0000ff } ); 
     const circle = new three.Mesh( geometry, material ); 
     circle.position.x = 1000;
     circle.position.y = 1000;
-    scene.add( circle );
+    // scene.add( circle );
     
     
     $('canvas').addClass("mouse-listener");
@@ -104,7 +104,7 @@ import particleImage from "../../images/particle.png";
     
     
     
-    const particleCount = 1000000;
+    const particleCount = 500;
     const particles = new three.BufferGeometry();
     const dimensions = 3
     const positions = new Float32Array(particleCount * dimensions);
@@ -143,7 +143,7 @@ import particleImage from "../../images/particle.png";
     particles.setAttribute('color', new three.BufferAttribute(colors, 3));
     const sprite = new three.TextureLoader().load(particleImage);
     const particleMaterial = new three.PointsMaterial({ 
-      size: 0.0015, 
+      size: 0.15, 
       map: sprite,
       vertexColors: true 
       
