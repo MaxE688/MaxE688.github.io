@@ -15,6 +15,8 @@ import projects from "./project-data.js"
 // import './effects.js';
 import "jquery-breakpoints";
 import "./util.js";
+import modalCloseimgDark from '../../images/SVG/close-circle-dark.svg' 
+import modalOpenimgLight from '../../images/SVG/close-circle-light.svg'
 
 (($) => {
 
@@ -82,8 +84,8 @@ import "./util.js";
 			$btnContainer.append($("<a href='" + proj.source + "' class='button'>View Source</a>"));
 	
 			// create close button for modal
-			$closeModal.append($("<img class='close-modal-img' id='close-modal-1' src='./images/SVG/close-circle-dark.svg' />"));
-			$closeModal.append($("<img class='close-modal-img' id='close-modal-2' src='./images/SVG/close-circle-light.svg' />"));
+			$closeModal.append($(`<img class='close-modal-img' id='close-modal-1' src=${modalCloseimgDark} />`));
+			$closeModal.append($(`<img class='close-modal-img' id='close-modal-2' src=${modalOpenimgLight} />`));
 			
 			// append elements to finish creation of modal
 			$modalContent.append($closeModal);
