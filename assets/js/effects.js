@@ -21,8 +21,10 @@ import particleImage from "../../images/particle.png";
 
     const cameraDistance = 5;
     camera.position.z = cameraDistance;
-    const sceneWidth = (frustrumWidth / camera.near) * cameraDistance;
-    const sceneHeight = (frustrumHeight / camera.near) * cameraDistance;
+    let sceneWidth = (frustrumWidth / camera.near) * cameraDistance;
+    let sceneHeight = (frustrumHeight / camera.near) * cameraDistance;
+
+    
 
     const maxX = sceneWidth / 2;
     const minX = -(maxX);
@@ -30,8 +32,8 @@ import particleImage from "../../images/particle.png";
     const minY = -(maxY);
 
     const interactionRadius = 0.3;
-    const dangerRadius = interactionRadius + 1;
-    const reflectForce = 0.8;
+    const dangerRadius = interactionRadius + 1.5;
+    const reflectForce = 1.5;
 
     const renderer = new three.WebGLRenderer();
     renderer.setSize(width, height);
@@ -104,7 +106,7 @@ import particleImage from "../../images/particle.png";
     
     
     
-    const particleCount = 500;
+    const particleCount = 100;
     const particles = new three.BufferGeometry();
     const dimensions = 3
     const positions = new Float32Array(particleCount * dimensions);
@@ -132,8 +134,10 @@ import particleImage from "../../images/particle.png";
       colors[i * 3 + 2] = color.b
       
       
-      speeds[x] = Math.random() * (0.01 - 0.005) + 0.005; // speed on x-axis
-      speeds[y] = Math.random() * (0.002 - -0.002) + -0.003; //speed on y-axis
+      // speeds[x] = Math.random() * (0.01 - 0.005) + 0.005; // speed on x-axis
+      // speeds[y] = Math.random() * (0.002 - -0.002) + -0.003; //speed on y-axis
+      speeds[x] = getXSpeed(); // speed on x-axis
+      speeds[y] = getYSpeed();
       speeds[z] = 0 // speed on z access
       
       
@@ -160,81 +164,85 @@ import particleImage from "../../images/particle.png";
         const y = i * 3 + 1;
         const mX = mouse.x;
         const mY = mouse.y;
+        const velocity = new three.Vector2(speeds[x], speeds[y]);
+        const currPosition = new three.Vector2(positions[x], positions[y]);
+        const prevPosition = new three.Vector2(positions[x] - speeds[x], positions[y] - speeds[y]);
         
         
-        let distToMouse = Math.sqrt((mX - positions[x])**2 + (mY - positions[y])**2);
+        // let distToMouse = Math.sqrt((mX - positions[x])**2 + (mY - positions[y])**2);
+        const distToMouse = getDistance(mouse, currPosition);
+        const prevDist = getDistance(mouse, prevPosition);
 
+        let intersectPoint
+        
         if(distToMouse < dangerRadius){
-          // const speed = 0.1
-          // const c = new three.Vector2(mX, mY);
-          // const particle = new three.Vector2(positions[x], positions[y]); 
-          // const direction = new three.Vector2().multiplyVectors(c, particle).normalize();
-
-          // speeds[x] += direction.x * speed;
-          // speeds[y] += direction.y * speed;
-          // speeds[x] *= speed;
-          // speeds[y] *= speed;
+          const reducedSpeed = 0.99;
+          const increaseSpeed = 1.05 + ( 1.0 - reducedSpeed);
+          
+          intersectPoint = getIntersection(
+            mouse,
+            velocity,
+            currPosition,
+            interactionRadius
+          );
+          if(intersectPoint){
+            if(prevDist > distToMouse && getDistance(prevPosition, currPosition) > 0.008){
+              speeds[x] *= reducedSpeed; 
+              speeds[y] *= reducedSpeed;
+            }
+            else if(getDistance(prevPosition, currPosition) < 0.6){
+              speeds[x] *= increaseSpeed; 
+              speeds[y] *= increaseSpeed; 
+            }
+          }
+          
         }
-        
         if(distToMouse < interactionRadius){
-          positions[x] -= speeds[x];
-          positions[y] -= speeds[y];
-
           
-          let intersectPoint;
-          const c = new three.Vector2(mX, mY);
-          const v = new three.Vector2(speeds[x], speeds[y]);
-          const p = new three.Vector2(positions[x] - speeds[x], positions[y] - speeds[y]);
+          intersectPoint = getIntersection(
+            mouse,
+            velocity,
+            currPosition,
+            interactionRadius
+          );
+          const R = getReflection(mouse, velocity, intersectPoint);
+          const distFactor = interactionRadius
+          const curveHeight = 0.05;
+          const t = (1 - (distToMouse / distFactor));
+          // const parabolaX = currPosition.x + (mX - currPosition.x) * t;
+          // const parabolaY = currPosition.y  + (curveHeight * (t * (1-t))) ;
+          const parabolaX = intersectPoint.x + (currPosition.x - intersectPoint.x) * t;
+          const parabolaY = intersectPoint.y  + (curveHeight * (t * (1-t))) ;
           
+          const rotationAngle = Math.atan2(R.y, R.x); 
+          const cosAngle = Math.cos(rotationAngle);
+          const sinAngle = Math.sin(rotationAngle);
           
-          const A = v.x**2 + v.y**2;
-          const B = 2*((p.x - c.x) * v.x + (p.y - c.y) * v.y);
-          const C = (p.x - c.x)**2 + (p.y - c.y)**2 - interactionRadius**2;
+          const rParabolaX = cosAngle * (parabolaX - intersectPoint.x) - sinAngle * (parabolaY - intersectPoint.y) + intersectPoint.x;
+          const rParabolaY = sinAngle * (parabolaX - intersectPoint.x) + cosAngle * (parabolaY - intersectPoint.y) + intersectPoint.y;
           
-          const discriminant = B**2 - 4*A*C;
-
-          const t1 = (-(B) + Math.sqrt(discriminant))/(2 * A);
-          const t2 = (-(B) - Math.sqrt(discriminant))/(2 * A);
-
-          if(discriminant > 0){
-            const point1 = new three.Vector2( (p.x + t1 * v.x), (p.y + t1 * v.y) );
-            const point2 = new three.Vector2( (p.x + t2 * v.x), (p.y + t2 * v.y) );
-
-            const distP1 = Math.sqrt((point1.x - positions[x])**2 + (point1.y - positions[y])**2);
-            const distP2 = Math.sqrt((point2.x - p.x)**2 + (point2.y - p.y)**2);
-            intersectPoint = distP1 - distP2 > 0? point2 : point1;
-
-          }
-          else{
-            console.log("There are not 2 intersection points");
-          }
-          
-          const N = intersectPoint.clone().sub(c)
-          N.normalize();
-
-          const dotProduct = v.dot(N);
-          const R = v.sub(N.multiplyScalar(2*dotProduct));
-
-          const curveOffset = new three.Vector2(-N.y, N.x).multiplyScalar(0.8);
-          
-          speeds[x] = (R.x + curveOffset.x) * reflectForce;
-          speeds[y] = (R.y + curveOffset.y) * reflectForce;
-          // speeds[x] = (R.x) * reflectForce;
-          // speeds[y] = (R.y) * reflectForce;
-          positions[x] = intersectPoint.x //+ v.x;
-          positions[y] = intersectPoint.y //+ v.y;
-
+          speeds[x] = (rParabolaX - currPosition.x) * reflectForce; 
+          speeds[y] = (rParabolaY - currPosition.y) * reflectForce;
         }
+          
+          // const parabolaY = intersectPoint.y  + a * (parabolaX - intersectPoint.x) * (parabolaX - intersectPoint.x);
+          // const R = getReflection(mouse, velocity, intersectPoint);
+          // speeds[x] = R.x * reflectForce;
+          // speeds[y] = R.y * reflectForce;
+          // positions[x] = intersectPoint.x + velocity.x;
+          // positions[y] = intersectPoint.y + velocity.y;
+        //}
+        
 
     
         positions[x] += speeds[x];
-        positions[y] += speeds[y] ;
+        positions[y] += speeds[y];
 
         if(positions[x] > maxX || positions[x] < minX-1){ 
           positions[x] = minX - 1;
-          speeds[x] = Math.abs(speeds[x]) < 0.02? Math.abs(speeds[x]) : Math.random() * (0.01 - 0.05) - 0.05;
+          speeds[x] = Math.abs(speeds[x]) < 0.02? Math.abs(speeds[x]) : getXSpeed();
           if(speeds[y] > 0.003 || speeds[y] < -0.003){
-            speeds[y] = Math.random() * ( 0.002 - -0.002) + -0.002;
+            speeds[y] = getYSpeed();
             // console.log("slowed y down")
           }
         }
@@ -251,9 +259,6 @@ import particleImage from "../../images/particle.png";
       }
       particleSystem.geometry.attributes.position.needsUpdate = true;
     
-      // cube.position.y = 0;
-      // cube.rotation.x += 0.01;
-      // cube.rotation.y += 0.01;
       renderer.render(scene, camera)
     }
     renderer.setAnimationLoop(animate);
@@ -265,5 +270,55 @@ import particleImage from "../../images/particle.png";
   
 })(jQuery);
 
+const getXSpeed = () => {
+  return Math.random() * (0.03 - 0.01) + 0.01; // speed on x-axis
+}
+const getYSpeed = () => {
+  return Math.random() * (0.002 - -0.002) + -0.003; 
+}
 
+const getDistance = (p1, p2) => {
+  return Math.sqrt((p1.x - p2.x)**2 + (p1.y - p2.y)**2 )
+}
 
+const getIntersection = (mouse, velocity, particle, interactionRadius) => {
+  let intersectPoint;
+  const c = mouse
+  const v = velocity
+  const p = particle;
+  
+  const A = v.x**2 + v.y**2;
+  const B = 2*((p.x - c.x) * v.x + (p.y - c.y) * v.y);
+  const C = (p.x - c.x)**2 + (p.y - c.y)**2 - interactionRadius**2;
+  
+  const discriminant = B**2 - 4*A*C;
+
+  const t1 = (-(B) + Math.sqrt(discriminant))/(2 * A);
+  const t2 = (-(B) - Math.sqrt(discriminant))/(2 * A);
+
+  if(discriminant > 0){
+    const point1 = new three.Vector2( (p.x + t1 * v.x), (p.y + t1 * v.y) );
+    const point2 = new three.Vector2( (p.x + t2 * v.x), (p.y + t2 * v.y) );
+
+    const distP1 = Math.sqrt((point1.x - p.x)**2 + (point1.y - p.y)**2);
+    const distP2 = Math.sqrt((point2.x - p.x)**2 + (point2.y - p.y)**2);
+    intersectPoint = distP1 - distP2 > 0? point2 : point1;
+
+  }
+  else if(discriminant == 0){
+    console.log("Discriminant is 0");
+  }
+  
+  return intersectPoint;
+}
+
+const getReflection = (mouse, velocity, intersectPoint) => {
+
+  const N = intersectPoint.clone().sub(mouse)
+  N.normalize();
+
+  const dotProduct = velocity.dot(N);
+  const R = velocity.clone().sub(N.clone().multiplyScalar(2*dotProduct));
+
+  return R;
+}
