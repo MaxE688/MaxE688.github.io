@@ -148,7 +148,6 @@ main {
 }
 
 canvas{
-  width: 100%;
   position: absolute;
 }
 
@@ -163,14 +162,24 @@ canvas{
 
 
 .text-bg {
-  background-color: darkgrey;
+  /* background-color: darkgrey; */
+  background-color: rgba(169, 169, 169,.8);
   border-radius: 2em;
-  opacity: 0.8;
+  /* opacity: 0.8; */
   padding: 1em 2em;
   margin-bottom: 3em;
+}
+
+.on-top{
+  z-index: 1;
+  position: relative;
 }
 
 .main-subtext {
   margin-bottom: 0em;
   opacity: 1;
+}
+
+#banner{
+  padding-top:5em;
 }
