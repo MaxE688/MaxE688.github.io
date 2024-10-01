@@ -1,9 +1,6 @@
-// import * as _ from "./main.js";
 import * as three from 'three';
 import particleImage from "../../images/particle.png";
 import effectBG from "../../images/effect-bg.png";
-// import * as $ from "jquery";
-// window.jQuery = $;
 
 (($) => {
   
@@ -44,6 +41,7 @@ import effectBG from "../../images/effect-bg.png";
     const maxY = sceneHeight / 2;
     const minY = -(maxY);
 
+    
     const interactionRadius = 0.25;
     const dangerRadius = interactionRadius + 0.7;
     const reflectForce = 1.1;
@@ -120,7 +118,8 @@ import effectBG from "../../images/effect-bg.png";
     
     
     
-    const particleCount = 5000;
+    const particleCount = 50;
+    const particleSize = 0.5;
     const particles = new three.BufferGeometry();
     const dimensions = 3
     const positions = new Float32Array(particleCount * dimensions);
@@ -142,11 +141,11 @@ import effectBG from "../../images/effect-bg.png";
       // positions[i*3 + 2] = Math.random() * (3 - -3) + -3;
       positions[z] = 0;
       
-      color.setHSL(Math.random() * (0.9 - 0.2) + 0.2, 0.9, Math.random() * (0.5 - 0.3) + 0.3);
-      console.log("Red: " + color.r)
-      colors[i * 3] = (Math.random() * (245 - 200) + 200)/255//color.r
-      colors[i * 3 + 1] = (Math.random() * (200 - 0) + 0)/255 //color.g
-      colors[i * 3 + 2] = (Math.random() * (30 - 0) + 0)/255  //color.b
+      // color.setHSL(Math.random() * (0.9 - 0.2) + 0.2, 0.9, Math.random() * (0.5 - 0.3) + 0.3);
+      // console.log("Red: " + color.r)
+      colors[i * 3] = (Math.random() * (50 - 30) + 30)/255//color.r
+      colors[i * 3 + 1] = (Math.random() * (255 - 200) + 100)/255 //color.g
+      colors[i * 3 + 2] = (Math.random() * (40 - 0) + 0)/255  //color.b
       
       
       // speeds[x] = Math.random() * (0.1 - 0.03) + 0.03; // speed on x-axis
@@ -154,8 +153,8 @@ import effectBG from "../../images/effect-bg.png";
       // if(speeds[x] < 0.1 && speeds[x] > 0) speeds[x] = 0.1;
       // if(speeds[x] > -0.1 && speeds[x] < 0) speeds[x] = -0.1;
       // speeds[y] = 0;
-      speeds[x] = getXSpeed(); // speed on x-axis
-      speeds[y] = getYSpeed();
+      speeds[x] = getXSpeed(); //getXSpeed(); // speed on x-axis
+      speeds[y] = getXSpeed(); //getYSpeed();
       speeds[z] = 0 // speed on z access
       
       
@@ -165,7 +164,7 @@ import effectBG from "../../images/effect-bg.png";
     particles.setAttribute('color', new three.BufferAttribute(colors, 3));
     const sprite = new three.TextureLoader().load(particleImage);
     const particleMaterial = new three.PointsMaterial({ 
-      size: 0.15, 
+      size: particleSize, 
       alphaMap: sprite,
       map: sprite,
       vertexColors: true,
@@ -182,8 +181,8 @@ import effectBG from "../../images/effect-bg.png";
       for( let i = 0; i < particleCount; i++){
         const x = i * 3;
         const y = i * 3 + 1;
-        const mX = mouse.x;
-        const mY = mouse.y;
+        // const mX = mouse.x;
+        // const mY = mouse.y;
         const velocity = new three.Vector2(
           speeds[x],
           speeds[y] 
@@ -232,21 +231,21 @@ import effectBG from "../../images/effect-bg.png";
                 // interactionRadius
               );
 
-              const R = getReflection(mouse, velocity, intersectPoint);
-              const distFactor = distToMouse
-              const curveHeight = 0.05;
-              const t = (1 - (distToMouse / distFactor));
+              const R = getReflectionMouse(mouse, velocity, intersectPoint);
+              // const distFactor = distToMouse
+              // const curveHeight = 0.05;
+              // const t = (1 - (distToMouse / distFactor));
               // const parabolaX = currPosition.x + (mX - currPosition.x) * t;
               // const parabolaY = currPosition.y  + (curveHeight * (t * (1-t))) ;
-              const parabolaX = intersectPoint.x + (prevPosition.x - intersectPoint.x) * t;
-              const parabolaY = intersectPoint.y  + (curveHeight * (t * (1-t))) ;
+              // const parabolaX = intersectPoint.x + (prevPosition.x - intersectPoint.x) * t;
+              // const parabolaY = intersectPoint.y  + (curveHeight * (t * (1-t))) ;
               
-              const rotationAngle = Math.atan2(R.y, R.x); 
-              const cosAngle = Math.cos(rotationAngle);
-              const sinAngle = Math.sin(rotationAngle);
+              // const rotationAngle = Math.atan2(R.y, R.x); 
+              // const cosAngle = Math.cos(rotationAngle);
+              // const sinAngle = Math.sin(rotationAngle);
               
-              const rParabolaX = cosAngle * (parabolaX - intersectPoint.x) - sinAngle * (parabolaY - intersectPoint.y) + intersectPoint.x;
-              const rParabolaY = sinAngle * (parabolaX - intersectPoint.x) + cosAngle * (parabolaY - intersectPoint.y) + intersectPoint.y;
+              // const rParabolaX = cosAngle * (parabolaX - intersectPoint.x) - sinAngle * (parabolaY - intersectPoint.y) + intersectPoint.x;
+              // const rParabolaY = sinAngle * (parabolaX - intersectPoint.x) + cosAngle * (parabolaY - intersectPoint.y) + intersectPoint.y;
               
               // speeds[x] = (rParabolaX - prevPosition.x) * reflectForce; 
               // speeds[y] = (rParabolaY - prevPosition.y) * reflectForce;
@@ -266,49 +265,88 @@ import effectBG from "../../images/effect-bg.png";
               interactionRadius
             );
 
-            const R = getReflection(mouse, velocity, intersectPoint);
-            const distFactor = interactionRadius
-            const curveHeight = 0.05;
-            const t = (1 - (distToMouse / distFactor));
+            const R = getReflectionMouse(mouse, velocity, intersectPoint);
+            // const distFactor = interactionRadius
+            // const curveHeight = 0.05;
+            // const t = (1 - (distToMouse / distFactor));
 
-            const parabolaX = intersectPoint.x + (currPosition.x - intersectPoint.x) * t;
-            const parabolaY = intersectPoint.y  + (curveHeight * (t * (1-t))) ;
+            // const parabolaX = intersectPoint.x + (currPosition.x - intersectPoint.x) * t;
+            // const parabolaY = intersectPoint.y  + (curveHeight * (t * (1-t))) ;
             
-            const rotationAngle = Math.atan2(R.y, R.x); 
-            const cosAngle = Math.cos(rotationAngle);
-            const sinAngle = Math.sin(rotationAngle);
+            // const rotationAngle = Math.atan2(R.y, R.x); 
+            // const cosAngle = Math.cos(rotationAngle);
+            // const sinAngle = Math.sin(rotationAngle);
             
-            const rParabolaX = cosAngle * (parabolaX - intersectPoint.x) - sinAngle * (parabolaY - intersectPoint.y) + intersectPoint.x;
-            const rParabolaY = sinAngle * (parabolaX - intersectPoint.x) + cosAngle * (parabolaY - intersectPoint.y) + intersectPoint.y;
+            // const rParabolaX = cosAngle * (parabolaX - intersectPoint.x) - sinAngle * (parabolaY - intersectPoint.y) + intersectPoint.x;
+            // const rParabolaY = sinAngle * (parabolaX - intersectPoint.x) + cosAngle * (parabolaY - intersectPoint.y) + intersectPoint.y;
             
-            speeds[x] = (rParabolaX - currPosition.x) * reflectForce; 
-            speeds[y] = (rParabolaY - currPosition.y) * reflectForce;
+            speeds[x] = R.x * reflectForce; 
+            speeds[y] = R.y * reflectForce;
+            // speeds[x] = (rParabolaX - currPosition.x) * reflectForce; 
+            // speeds[y] = (rParabolaY - currPosition.y) * reflectForce;
             positions[x] = intersectPoint.x + velocity.x;
             positions[y] = intersectPoint.y + velocity.y;
           }
     
     
-        positions[x] += speeds[x];
-        positions[y] += speeds[y];
+          
+          // if(positions[x] > maxX || positions[x] < minX){ 
+            //   positions[x] = minX ;
+            //   speeds[x] = Math.abs(speeds[x]) < 0.02? Math.abs(speeds[x]) : getXSpeed();
+        //   if(speeds[y] > 0.003 || speeds[y] < -0.003){
+          //     speeds[y] = getYSpeed();
+          //     // console.log("slowed y down")
+        //   }
+        // }
+        
+        // if((positions[y] > maxY || positions[y] < minY)){
+          //   positions[y] = Math.random() * (maxY - minY) + minY;
+        //   positions[x] = minX-1;
+          
+        //   if(speeds[y] > 0.003 || speeds[y] < -0.003){
+        //     speeds[y] = Math.random() * ( 0.002 - -0.002) + -0.002;
+        //     // console.log("slowed y down")
+        //   }
+        // }
 
-        if(positions[x] > maxX || positions[x] < minX){ 
-          positions[x] = minX ;
-          speeds[x] = Math.abs(speeds[x]) < 0.02? Math.abs(speeds[x]) : getXSpeed();
-          if(speeds[y] > 0.003 || speeds[y] < -0.003){
-            speeds[y] = getYSpeed();
-            // console.log("slowed y down")
+        
+        let boundaryReflectSpeed = 1.0;
+        const buffer = (particleSize / 2) - 0.05;
+        const highSpeed = 0.015;
+        const lowSpeed = 0.005;
+        const reduceReflect = 0.75;
+        const increaseReflect = 1.5;
+
+        if(currPosition.x <= minX + buffer || currPosition.x >= maxX - buffer){
+          
+          positions[x] = currPosition.x <= minX + buffer? minX + buffer : maxX - buffer;
+          
+          if(speeds[x] > highSpeed || speeds[x] < -highSpeed ){
+            boundaryReflectSpeed = reduceReflect;
           }
+          else if(speeds[x] < lowSpeed && speeds[x] > -lowSpeed){
+            boundaryReflectSpeed = increaseReflect; 
+          }
+          speeds[x] = -(speeds[x] * boundaryReflectSpeed);
         }
         
-        if((positions[y] > maxY || positions[y] < minY)){
-          positions[y] = Math.random() * (maxY - minY) + minY;
-          positions[x] = minX-1;
+        if(currPosition.y <= minY + buffer || currPosition.y >= maxY - buffer){
           
-          if(speeds[y] > 0.003 || speeds[y] < -0.003){
-            speeds[y] = Math.random() * ( 0.002 - -0.002) + -0.002;
-            // console.log("slowed y down")
+          positions[y] = currPosition.y <= minY + buffer? minY + buffer : maxY - buffer;
+
+          if(speeds[y] > highSpeed || speeds[y] < -highSpeed){
+            boundaryReflectSpeed = reduceReflect;
           }
+          else if(speeds[y] < lowSpeed && speeds[y] > -lowSpeed){
+            boundaryReflectSpeed = increaseReflect;
+          }
+          speeds[y] = -(speeds[y] * boundaryReflectSpeed);
         }
+        
+        positions[x] += speeds[x] > 0.0001 || speeds[x] < -0.0001? speeds[x] : Math.random() * (0.01 - -0.01) + -0.01;
+        positions[y] += speeds[y] > 0.0001 || speeds[y] < -0.0001? speeds[y] : Math.random() * (0.01 - -0.01) + -0.01;
+
+
       }
       particleSystem.geometry.attributes.position.needsUpdate = true;
     
@@ -324,10 +362,20 @@ import effectBG from "../../images/effect-bg.png";
 })(jQuery);
 
 const getXSpeed = () => {
-  return Math.random() * (0.03 - 0.01) + 0.01; // speed on x-axis
+  return Math.random() * (0.015 - -0.015) + -0.015; // speed on x-axis
+  // return Math.random() * (0.03 - 0.01) + 0.01; // speed on x-axis
 }
 const getYSpeed = () => {
+  // return Math.random() * (0.002 - -0.002) + -0.003; 
   return Math.random() * (0.002 - -0.002) + -0.003; 
+}
+
+
+const getXSpeed2 = () => {
+  return Math.random() * (0.002 - -0.002) + -0.002; //(0.03 - 0.01) + 0.01; // speed on x-axis
+}
+const getYSpeed2 = () => {
+  return -(Math.random() * (0.03 - 0.01) + 0.01); //(0.002 - -0.002) + -0.003; 
 }
 
 const getDistance = (p1, p2) => {
@@ -365,7 +413,13 @@ const getIntersection = (mouse, velocity, particle, interactionRadius) => {
   return intersectPoint;
 }
 
-const getReflection = (mouse, velocity, intersectPoint) => {
+const getReflectionBoundary = (velocity, boundaryPoint) => {
+  boundaryPoint.normalize();
+  const dotProduct = velocity.dot(boundaryPoint)
+  return velocity.clone().sub(boundaryPoint.clone().multiplyScalar(2*dotProduct));
+}
+
+const getReflectionMouse = (mouse, velocity, intersectPoint) => {
 
   const N = intersectPoint.clone().sub(mouse)
   N.normalize();
