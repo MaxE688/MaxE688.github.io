@@ -1,6 +1,7 @@
 // import * as _ from "./main.js";
 import * as three from 'three';
 import particleImage from "../../images/particle.png";
+import effectBG from "../../images/effect-bg.png";
 // import * as $ from "jquery";
 // window.jQuery = $;
 
@@ -8,12 +9,24 @@ import particleImage from "../../images/particle.png";
   
   
   $(window).on('load', function() {
+
+    $('#top').on("resize", (event) => {
+      const width = $(this).innerWidth();
+      const height = $(this).innerHeight();
+      camera.aspect(width / height);
+      camera.updateProjectionMatrix();
+      renderer.setSize(width, height);
+
+      console.log("resize");
+    })
     
     const width = $('#top').innerWidth();
     const height = $('#top').innerHeight();
 
     
+    const bg = new three.TextureLoader().load(effectBG)
     const scene = new three.Scene();
+    scene.background = bg;
     
     const camera = new three.PerspectiveCamera(75, width / height, 0.1, 1000);
     const frustrumHeight = 2 * Math.tan(three.MathUtils.degToRad(camera.fov / 2)) * camera.near;
@@ -31,15 +44,16 @@ import particleImage from "../../images/particle.png";
     const maxY = sceneHeight / 2;
     const minY = -(maxY);
 
-    const interactionRadius = 0.3;
-    const dangerRadius = interactionRadius + 1.5;
-    const reflectForce = 1.5;
+    const interactionRadius = 0.25;
+    const dangerRadius = interactionRadius + 0.7;
+    const reflectForce = 1.1;
 
     const renderer = new three.WebGLRenderer();
     renderer.setSize(width, height);
 
     //put canvas in .container, set background-color of .row to transparent
-    $('#top').prepend(renderer.domElement);
+    // $('#top').prepend(renderer.domElement);
+    $('#top').append(renderer.domElement);
     
     let geometry = new three.BoxGeometry( 10.3, 1, 1 );
     let material = new three.MeshBasicMaterial( { color: 0xffffff } );
@@ -106,7 +120,7 @@ import particleImage from "../../images/particle.png";
     
     
     
-    const particleCount = 100;
+    const particleCount = 5000;
     const particles = new three.BufferGeometry();
     const dimensions = 3
     const positions = new Float32Array(particleCount * dimensions);
@@ -128,14 +142,18 @@ import particleImage from "../../images/particle.png";
       // positions[i*3 + 2] = Math.random() * (3 - -3) + -3;
       positions[z] = 0;
       
-      color.setHSL(Math.random(), 0.7, Math.random());
-      colors[i * 3] = color.r
-      colors[i * 3 + 1] = color.g
-      colors[i * 3 + 2] = color.b
+      color.setHSL(Math.random() * (0.9 - 0.2) + 0.2, 0.9, Math.random() * (0.5 - 0.3) + 0.3);
+      console.log("Red: " + color.r)
+      colors[i * 3] = (Math.random() * (245 - 200) + 200)/255//color.r
+      colors[i * 3 + 1] = (Math.random() * (200 - 0) + 0)/255 //color.g
+      colors[i * 3 + 2] = (Math.random() * (30 - 0) + 0)/255  //color.b
       
       
-      // speeds[x] = Math.random() * (0.01 - 0.005) + 0.005; // speed on x-axis
-      // speeds[y] = Math.random() * (0.002 - -0.002) + -0.003; //speed on y-axis
+      // speeds[x] = Math.random() * (0.1 - 0.03) + 0.03; // speed on x-axis
+      // speeds[y] = Math.random() * (0.02 - -0.02) + -0.02; //speed on y-axis
+      // if(speeds[x] < 0.1 && speeds[x] > 0) speeds[x] = 0.1;
+      // if(speeds[x] > -0.1 && speeds[x] < 0) speeds[x] = -0.1;
+      // speeds[y] = 0;
       speeds[x] = getXSpeed(); // speed on x-axis
       speeds[y] = getYSpeed();
       speeds[z] = 0 // speed on z access
@@ -148,8 +166,10 @@ import particleImage from "../../images/particle.png";
     const sprite = new three.TextureLoader().load(particleImage);
     const particleMaterial = new three.PointsMaterial({ 
       size: 0.15, 
+      alphaMap: sprite,
       map: sprite,
-      vertexColors: true 
+      vertexColors: true,
+      transparent: true 
       
     });
     const particleSystem = new three.Points(particles, particleMaterial);
@@ -164,20 +184,27 @@ import particleImage from "../../images/particle.png";
         const y = i * 3 + 1;
         const mX = mouse.x;
         const mY = mouse.y;
-        const velocity = new three.Vector2(speeds[x], speeds[y]);
+        const velocity = new three.Vector2(
+          speeds[x],
+          speeds[y] 
+        );
         const currPosition = new three.Vector2(positions[x], positions[y]);
         const prevPosition = new three.Vector2(positions[x] - speeds[x], positions[y] - speeds[y]);
+        // const currSpeed = getDistance(prevPosition, currPosition);
         
         
         // let distToMouse = Math.sqrt((mX - positions[x])**2 + (mY - positions[y])**2);
         const distToMouse = getDistance(mouse, currPosition);
         const prevDist = getDistance(mouse, prevPosition);
-
-        let intersectPoint
+        const currSpeed = Math.abs(distToMouse - prevDist);
+        let intersectPoint;
         
         if(distToMouse < dangerRadius){
-          const reducedSpeed = 0.99;
-          const increaseSpeed = 1.05 + ( 1.0 - reducedSpeed);
+
+          const normalizedDist = (distToMouse/(dangerRadius-interactionRadius)) //- interactionRadius
+          const reducedSpeed = normalizedDist < 0.2? normalizedDist : 0.97;//0.95;
+          // const reducedSpeed = 0.97;
+          const increaseSpeed = currPosition.x < mouse.x? 1.05 + ( 1.0 - reducedSpeed) : 1.0 + ( 1.0 - reducedSpeed);
           
           intersectPoint = getIntersection(
             mouse,
@@ -185,61 +212,87 @@ import particleImage from "../../images/particle.png";
             currPosition,
             interactionRadius
           );
-          if(intersectPoint){
-            if(prevDist > distToMouse && getDistance(prevPosition, currPosition) > 0.008){
+          // if(intersectPoint){
+            if(prevDist > distToMouse /* && currSpeed > 0.001 */){
               speeds[x] *= reducedSpeed; 
               speeds[y] *= reducedSpeed;
             }
-            else if(getDistance(prevPosition, currPosition) < 0.6){
+            else if(currSpeed < 0.6 /* && currPosition.x < mouse.x */){
               speeds[x] *= increaseSpeed; 
               speeds[y] *= increaseSpeed; 
             }
-          }
+
+            if(currSpeed < 0.005){
+
+              intersectPoint = getIntersection(
+                mouse,
+                velocity, // consider calculating prev speed to get more accurate result
+                currPosition,
+                distToMouse
+                // interactionRadius
+              );
+
+              const R = getReflection(mouse, velocity, intersectPoint);
+              const distFactor = distToMouse
+              const curveHeight = 0.05;
+              const t = (1 - (distToMouse / distFactor));
+              // const parabolaX = currPosition.x + (mX - currPosition.x) * t;
+              // const parabolaY = currPosition.y  + (curveHeight * (t * (1-t))) ;
+              const parabolaX = intersectPoint.x + (prevPosition.x - intersectPoint.x) * t;
+              const parabolaY = intersectPoint.y  + (curveHeight * (t * (1-t))) ;
+              
+              const rotationAngle = Math.atan2(R.y, R.x); 
+              const cosAngle = Math.cos(rotationAngle);
+              const sinAngle = Math.sin(rotationAngle);
+              
+              const rParabolaX = cosAngle * (parabolaX - intersectPoint.x) - sinAngle * (parabolaY - intersectPoint.y) + intersectPoint.x;
+              const rParabolaY = sinAngle * (parabolaX - intersectPoint.x) + cosAngle * (parabolaY - intersectPoint.y) + intersectPoint.y;
+              
+              // speeds[x] = (rParabolaX - prevPosition.x) * reflectForce; 
+              // speeds[y] = (rParabolaY - prevPosition.y) * reflectForce;
+              speeds[x] = R.x * 1.05//* reflectForce;
+              speeds[y] = R.y * 1.05//* reflectForce;
+            }
+          // }
           
+
         }
         if(distToMouse < interactionRadius){
-          
-          intersectPoint = getIntersection(
-            mouse,
-            velocity,
-            currPosition,
-            interactionRadius
-          );
-          const R = getReflection(mouse, velocity, intersectPoint);
-          const distFactor = interactionRadius
-          const curveHeight = 0.05;
-          const t = (1 - (distToMouse / distFactor));
-          // const parabolaX = currPosition.x + (mX - currPosition.x) * t;
-          // const parabolaY = currPosition.y  + (curveHeight * (t * (1-t))) ;
-          const parabolaX = intersectPoint.x + (currPosition.x - intersectPoint.x) * t;
-          const parabolaY = intersectPoint.y  + (curveHeight * (t * (1-t))) ;
-          
-          const rotationAngle = Math.atan2(R.y, R.x); 
-          const cosAngle = Math.cos(rotationAngle);
-          const sinAngle = Math.sin(rotationAngle);
-          
-          const rParabolaX = cosAngle * (parabolaX - intersectPoint.x) - sinAngle * (parabolaY - intersectPoint.y) + intersectPoint.x;
-          const rParabolaY = sinAngle * (parabolaX - intersectPoint.x) + cosAngle * (parabolaY - intersectPoint.y) + intersectPoint.y;
-          
-          speeds[x] = (rParabolaX - currPosition.x) * reflectForce; 
-          speeds[y] = (rParabolaY - currPosition.y) * reflectForce;
-        }
-          
-          // const parabolaY = intersectPoint.y  + a * (parabolaX - intersectPoint.x) * (parabolaX - intersectPoint.x);
-          // const R = getReflection(mouse, velocity, intersectPoint);
-          // speeds[x] = R.x * reflectForce;
-          // speeds[y] = R.y * reflectForce;
-          // positions[x] = intersectPoint.x + velocity.x;
-          // positions[y] = intersectPoint.y + velocity.y;
-        //}
-        
 
+            intersectPoint = getIntersection(
+              mouse,
+              velocity,
+              currPosition,
+              interactionRadius
+            );
+
+            const R = getReflection(mouse, velocity, intersectPoint);
+            const distFactor = interactionRadius
+            const curveHeight = 0.05;
+            const t = (1 - (distToMouse / distFactor));
+
+            const parabolaX = intersectPoint.x + (currPosition.x - intersectPoint.x) * t;
+            const parabolaY = intersectPoint.y  + (curveHeight * (t * (1-t))) ;
+            
+            const rotationAngle = Math.atan2(R.y, R.x); 
+            const cosAngle = Math.cos(rotationAngle);
+            const sinAngle = Math.sin(rotationAngle);
+            
+            const rParabolaX = cosAngle * (parabolaX - intersectPoint.x) - sinAngle * (parabolaY - intersectPoint.y) + intersectPoint.x;
+            const rParabolaY = sinAngle * (parabolaX - intersectPoint.x) + cosAngle * (parabolaY - intersectPoint.y) + intersectPoint.y;
+            
+            speeds[x] = (rParabolaX - currPosition.x) * reflectForce; 
+            speeds[y] = (rParabolaY - currPosition.y) * reflectForce;
+            positions[x] = intersectPoint.x + velocity.x;
+            positions[y] = intersectPoint.y + velocity.y;
+          }
+    
     
         positions[x] += speeds[x];
         positions[y] += speeds[y];
 
-        if(positions[x] > maxX || positions[x] < minX-1){ 
-          positions[x] = minX - 1;
+        if(positions[x] > maxX || positions[x] < minX){ 
+          positions[x] = minX ;
           speeds[x] = Math.abs(speeds[x]) < 0.02? Math.abs(speeds[x]) : getXSpeed();
           if(speeds[y] > 0.003 || speeds[y] < -0.003){
             speeds[y] = getYSpeed();
