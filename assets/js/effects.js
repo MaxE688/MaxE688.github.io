@@ -50,29 +50,7 @@ import effectBG from "../../images/effect-bg.png";
     renderer.setSize(width, height);
 
     //put canvas in .container, set background-color of .row to transparent
-    // $('#top').prepend(renderer.domElement);
     $('#top').append(renderer.domElement);
-    
-    let geometry = new three.BoxGeometry( 10.3, 1, 1 );
-    let material = new three.MeshBasicMaterial( { color: 0xffffff } );
-    const cube = new three.Mesh( geometry, material );
-    // scene.add( cube );
-    
-    geometry = new three.CircleGeometry( dangerRadius, 32 ); 
-    material = new three.MeshBasicMaterial( { color: 0x111111 } ); 
-    const circle1 = new three.Mesh( geometry, material ); 
-    circle1.position.x = 1000;
-    circle1.position.y = 1000;
-    // scene.add( circle1 );
-    
-    geometry = new three.CircleGeometry( interactionRadius, 32 ); 
-    material = new three.MeshBasicMaterial( { color: 0x0000ff } ); 
-    const circle = new three.Mesh( geometry, material ); 
-    circle.position.x = 1000;
-    circle.position.y = 1000;
-    // scene.add( circle );
-    
-    
     $('canvas').addClass("mouse-listener");
     $('canvas').attr("id", "effects");
     const canvasDimensions = document.getElementById('effects').getBoundingClientRect();
@@ -83,16 +61,10 @@ import effectBG from "../../images/effect-bg.png";
     $('.mouse-listener').on('mousemove', event => trackMouse(event)); 
     
     const trackMouse = ( event ) => {
-      // const canvas = event.target.getBoundingClientRect();
       
       mouse.x = ((event.clientX - canvasDimensions.left) / canvasDimensions.width) * (sceneWidth) - (maxX);
       mouse.y = -((event.clientY - canvasDimensions.top) / canvasDimensions.height) * (sceneHeight) + (maxY);
-      // console.log('(' + mouse.x + ', ' + mouse.y + ')');
-      circle.position.x = mouse.x;
-      circle.position.y = mouse.y;
-      circle1.position.x = mouse.x;
-      circle1.position.y = mouse.y;
-      // console.log('Mouse: (' + mouse.x + ', ' + mouse.y + ')');
+      
     }
   
     $('canvas').on('mouseleave', (event) => {
@@ -116,45 +88,32 @@ import effectBG from "../../images/effect-bg.png";
     });
     
     
-    
-    
     const particleCount = 50;
     const particleSize = 0.5;
     const particles = new three.BufferGeometry();
-    const dimensions = 3
+    const dimensions = 3;
     const positions = new Float32Array(particleCount * dimensions);
     const colors = new Float32Array(particleCount * 3);
-    const speeds = new Float32Array(particleCount * dimensions)
-    const color = new three.Color();
+    const speeds = new Float32Array(particleCount * dimensions);
     
     for(let i = 0; i < particleCount; i++){
       const x = i * dimensions;
       const y = i * dimensions + 1;
       const z = i * dimensions + 2;
 
-      // if(speeds[x] === 0){
-      //   console.log("Zero speed: ")
-      // }
-      
+     
       positions[x] = Math.random() * (maxX - minX) + minX;
       positions[y] = Math.random() * (maxY - minY) + minY;
-      // positions[i*3 + 2] = Math.random() * (3 - -3) + -3;
       positions[z] = 0;
       
-      // color.setHSL(Math.random() * (0.9 - 0.2) + 0.2, 0.9, Math.random() * (0.5 - 0.3) + 0.3);
-      // console.log("Red: " + color.r)
+     
       colors[i * 3] = (Math.random() * (50 - 30) + 30)/255//color.r
       colors[i * 3 + 1] = (Math.random() * (255 - 200) + 100)/255 //color.g
       colors[i * 3 + 2] = (Math.random() * (40 - 0) + 0)/255  //color.b
       
-      
-      // speeds[x] = Math.random() * (0.1 - 0.03) + 0.03; // speed on x-axis
-      // speeds[y] = Math.random() * (0.02 - -0.02) + -0.02; //speed on y-axis
-      // if(speeds[x] < 0.1 && speeds[x] > 0) speeds[x] = 0.1;
-      // if(speeds[x] > -0.1 && speeds[x] < 0) speeds[x] = -0.1;
-      // speeds[y] = 0;
-      speeds[x] = getXSpeed(); //getXSpeed(); // speed on x-axis
-      speeds[y] = getXSpeed(); //getYSpeed();
+     
+      speeds[x] = getSpeed(); //getXSpeed(); // speed on x-axis
+      speeds[y] = getSpeed(); //getYSpeed();
       speeds[z] = 0 // speed on z access
       
       
@@ -181,18 +140,14 @@ import effectBG from "../../images/effect-bg.png";
       for( let i = 0; i < particleCount; i++){
         const x = i * 3;
         const y = i * 3 + 1;
-        // const mX = mouse.x;
-        // const mY = mouse.y;
         const velocity = new three.Vector2(
           speeds[x],
           speeds[y] 
         );
         const currPosition = new three.Vector2(positions[x], positions[y]);
         const prevPosition = new three.Vector2(positions[x] - speeds[x], positions[y] - speeds[y]);
-        // const currSpeed = getDistance(prevPosition, currPosition);
         
         
-        // let distToMouse = Math.sqrt((mX - positions[x])**2 + (mY - positions[y])**2);
         const distToMouse = getDistance(mouse, currPosition);
         const prevDist = getDistance(mouse, prevPosition);
         const currSpeed = Math.abs(distToMouse - prevDist);
@@ -202,7 +157,6 @@ import effectBG from "../../images/effect-bg.png";
 
           const normalizedDist = (distToMouse/(dangerRadius-interactionRadius)) //- interactionRadius
           const reducedSpeed = normalizedDist < 0.2? normalizedDist : 0.97;//0.95;
-          // const reducedSpeed = 0.97;
           const increaseSpeed = currPosition.x < mouse.x? 1.05 + ( 1.0 - reducedSpeed) : 1.0 + ( 1.0 - reducedSpeed);
           
           intersectPoint = getIntersection(
@@ -211,104 +165,51 @@ import effectBG from "../../images/effect-bg.png";
             currPosition,
             interactionRadius
           );
-          // if(intersectPoint){
-            if(prevDist > distToMouse /* && currSpeed > 0.001 */){
-              speeds[x] *= reducedSpeed; 
-              speeds[y] *= reducedSpeed;
-            }
-            else if(currSpeed < 0.6 /* && currPosition.x < mouse.x */){
-              speeds[x] *= increaseSpeed; 
-              speeds[y] *= increaseSpeed; 
-            }
 
-            if(currSpeed < 0.005){
 
-              intersectPoint = getIntersection(
-                mouse,
-                velocity, // consider calculating prev speed to get more accurate result
-                currPosition,
-                distToMouse
-                // interactionRadius
-              );
+          if(prevDist > distToMouse /* && currSpeed > 0.001 */){
+            speeds[x] *= reducedSpeed; 
+            speeds[y] *= reducedSpeed;
+          }
+          else if(currSpeed < 0.6 /* && currPosition.x < mouse.x */){
+            speeds[x] *= increaseSpeed; 
+            speeds[y] *= increaseSpeed; 
+          }
 
-              const R = getReflectionMouse(mouse, velocity, intersectPoint);
-              // const distFactor = distToMouse
-              // const curveHeight = 0.05;
-              // const t = (1 - (distToMouse / distFactor));
-              // const parabolaX = currPosition.x + (mX - currPosition.x) * t;
-              // const parabolaY = currPosition.y  + (curveHeight * (t * (1-t))) ;
-              // const parabolaX = intersectPoint.x + (prevPosition.x - intersectPoint.x) * t;
-              // const parabolaY = intersectPoint.y  + (curveHeight * (t * (1-t))) ;
-              
-              // const rotationAngle = Math.atan2(R.y, R.x); 
-              // const cosAngle = Math.cos(rotationAngle);
-              // const sinAngle = Math.sin(rotationAngle);
-              
-              // const rParabolaX = cosAngle * (parabolaX - intersectPoint.x) - sinAngle * (parabolaY - intersectPoint.y) + intersectPoint.x;
-              // const rParabolaY = sinAngle * (parabolaX - intersectPoint.x) + cosAngle * (parabolaY - intersectPoint.y) + intersectPoint.y;
-              
-              // speeds[x] = (rParabolaX - prevPosition.x) * reflectForce; 
-              // speeds[y] = (rParabolaY - prevPosition.y) * reflectForce;
-              speeds[x] = R.x * 1.05//* reflectForce;
-              speeds[y] = R.y * 1.05//* reflectForce;
-            }
-          // }
-          
-
-        }
-        if(distToMouse < interactionRadius){
+          if(currSpeed < 0.005){
 
             intersectPoint = getIntersection(
               mouse,
-              velocity,
+              velocity, // consider calculating prev speed to get more accurate result
               currPosition,
-              interactionRadius
+              distToMouse
+              // interactionRadius
             );
 
-            const R = getReflectionMouse(mouse, velocity, intersectPoint);
-            // const distFactor = interactionRadius
-            // const curveHeight = 0.05;
-            // const t = (1 - (distToMouse / distFactor));
-
-            // const parabolaX = intersectPoint.x + (currPosition.x - intersectPoint.x) * t;
-            // const parabolaY = intersectPoint.y  + (curveHeight * (t * (1-t))) ;
+            const R = getReflection(mouse, velocity, intersectPoint);
             
-            // const rotationAngle = Math.atan2(R.y, R.x); 
-            // const cosAngle = Math.cos(rotationAngle);
-            // const sinAngle = Math.sin(rotationAngle);
-            
-            // const rParabolaX = cosAngle * (parabolaX - intersectPoint.x) - sinAngle * (parabolaY - intersectPoint.y) + intersectPoint.x;
-            // const rParabolaY = sinAngle * (parabolaX - intersectPoint.x) + cosAngle * (parabolaY - intersectPoint.y) + intersectPoint.y;
-            
-            speeds[x] = R.x * reflectForce; 
-            speeds[y] = R.y * reflectForce;
-            // speeds[x] = (rParabolaX - currPosition.x) * reflectForce; 
-            // speeds[y] = (rParabolaY - currPosition.y) * reflectForce;
-            positions[x] = intersectPoint.x + velocity.x;
-            positions[y] = intersectPoint.y + velocity.y;
+            speeds[x] = R.x * 1.05//* reflectForce;
+            speeds[y] = R.y * 1.05//* reflectForce;
           }
-    
-    
-          
-          // if(positions[x] > maxX || positions[x] < minX){ 
-            //   positions[x] = minX ;
-            //   speeds[x] = Math.abs(speeds[x]) < 0.02? Math.abs(speeds[x]) : getXSpeed();
-        //   if(speeds[y] > 0.003 || speeds[y] < -0.003){
-          //     speeds[y] = getYSpeed();
-          //     // console.log("slowed y down")
-        //   }
-        // }
-        
-        // if((positions[y] > maxY || positions[y] < minY)){
-          //   positions[y] = Math.random() * (maxY - minY) + minY;
-        //   positions[x] = minX-1;
-          
-        //   if(speeds[y] > 0.003 || speeds[y] < -0.003){
-        //     speeds[y] = Math.random() * ( 0.002 - -0.002) + -0.002;
-        //     // console.log("slowed y down")
-        //   }
-        // }
+        }
 
+        if(distToMouse < interactionRadius){
+
+          intersectPoint = getIntersection(
+            mouse,
+            velocity,
+            currPosition,
+            interactionRadius
+          );
+
+          const R = getReflection(mouse, velocity, intersectPoint);
+        
+          speeds[x] = R.x * reflectForce; 
+          speeds[y] = R.y * reflectForce;
+          positions[x] = intersectPoint.x + velocity.x;
+          positions[y] = intersectPoint.y + velocity.y;
+        }
+    
         
         let boundaryReflectSpeed = 1.0;
         const buffer = (particleSize / 2) - 0.05;
@@ -356,26 +257,11 @@ import effectBG from "../../images/effect-bg.png";
     
   });
 
-  /************************************/
-
   
 })(jQuery);
 
-const getXSpeed = () => {
+const getSpeed = () => {
   return Math.random() * (0.015 - -0.015) + -0.015; // speed on x-axis
-  // return Math.random() * (0.03 - 0.01) + 0.01; // speed on x-axis
-}
-const getYSpeed = () => {
-  // return Math.random() * (0.002 - -0.002) + -0.003; 
-  return Math.random() * (0.002 - -0.002) + -0.003; 
-}
-
-
-const getXSpeed2 = () => {
-  return Math.random() * (0.002 - -0.002) + -0.002; //(0.03 - 0.01) + 0.01; // speed on x-axis
-}
-const getYSpeed2 = () => {
-  return -(Math.random() * (0.03 - 0.01) + 0.01); //(0.002 - -0.002) + -0.003; 
 }
 
 const getDistance = (p1, p2) => {
@@ -413,13 +299,7 @@ const getIntersection = (mouse, velocity, particle, interactionRadius) => {
   return intersectPoint;
 }
 
-const getReflectionBoundary = (velocity, boundaryPoint) => {
-  boundaryPoint.normalize();
-  const dotProduct = velocity.dot(boundaryPoint)
-  return velocity.clone().sub(boundaryPoint.clone().multiplyScalar(2*dotProduct));
-}
-
-const getReflectionMouse = (mouse, velocity, intersectPoint) => {
+const getReflection = (mouse, velocity, intersectPoint) => {
 
   const N = intersectPoint.clone().sub(mouse)
   N.normalize();
