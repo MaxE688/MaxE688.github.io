@@ -38,6 +38,10 @@
 			let $content = $("<div class='container flex' ></div>");
 			let $desc = $("<div class='modal-desc'></div>"); 
 			let $btnContainer = $("<div class='button-container'></div>");
+			const demoStr = proj.hasDemo? "Live Demo" : "Visit Site";
+			const sourceClass = proj.source !== ""? "" : "disabled" ;
+			let $demoBtn =  $("<a href='" + proj.demo + "' class='button'>" + demoStr +"</a>");
+			let $sourceBtn = $("<a href='" + proj.source + "' class='button "+ sourceClass + "'>View Source</a>");
 	
 			// create main content element for modal
 			$content.append($("<h1 class='modal-title'> "+ proj.title +"</>"));
@@ -46,9 +50,8 @@
 			$content.append($($desc));
 			$desc.append($("<p  >"+ proj.longDesc +"</p>"));
 			$desc.append($btnContainer);
-
-			$btnContainer.append($("<a href='" + proj.demo + "' class='button'>Live Demo</a>"));
-			$btnContainer.append($("<a href='" + proj.source + "' class='button'>View Source</a>"));
+			$btnContainer.append($demoBtn);
+			$btnContainer.append($sourceBtn);
 	
 			// create close button for modal
 			$closeModal.append($("<img class='close-modal-img' id='close-modal-1' src='./images/SVG/close-circle-dark.svg' />"));
@@ -63,7 +66,7 @@
 			$("#modal-container").append($modal);
 		});
 
-		
+
 		// Play initial animations on page load.
 		$window.on('load', function() {
 			window.setTimeout(function() {
