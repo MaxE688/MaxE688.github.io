@@ -63,40 +63,7 @@
 			$("#modal-container").append($modal);
 		});
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 		
-		
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 		// Play initial animations on page load.
 		$window.on('load', function() {
 			window.setTimeout(function() {
